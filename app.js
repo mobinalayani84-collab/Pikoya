@@ -7,9 +7,8 @@ const services={
 const NFT_SOURCE="https://raw.githubusercontent.com/ssamy2/TelegramGiftsAssests/main/Gifts_Details.json";
 const NFT_BASE="https://cdn.jsdelivr.net/gh/ssamy2/TelegramGiftsAssests@main/";
 const BACKDROP_SOURCE="https://cdn.jsdelivr.net/gh/ssamy2/TelegramGiftsAssests@main/backdrops/";
-const MODEL_ASSET_BASE="https://cdn.changes.tg/gifts/models/";
+const MODEL_ASSET_BASE="https://raw.githubusercontent.com/ssamy2/TelegramGiftsAssests/main/models/";
 const TON_TO_TOMAN=170000;
-const NFT_PAGE_SIZE=24;
 let nftSourcePromise=null;
 const nftAttrCache=new Map();
 async function getNftSource(){if(!nftSourcePromise)nftSourcePromise=fetch(NFT_SOURCE,{cache:"no-store"}).then(r=>{if(!r.ok)throw new Error("NFT source unavailable");return r.json()});return nftSourcePromise}
@@ -19,7 +18,7 @@ function tonToman(n){return Math.round(Number(n||0)*TON_TO_TOMAN).toLocaleString
 function tonMoney(n){return Number(n||0).toLocaleString("en-US",{maximumFractionDigits:4})+" TON · "+tonToman(n)}
 function money(n){return Number(n||0).toLocaleString("en-US")+" تومان"}
 function nftImageUrl(shortName){return NFT_BASE+"webp/by_name/"+encodeURIComponent(shortName)+".webp"}
-function modelImageUrl(giftName,modelName){return MODEL_ASSET_BASE+encodeURIComponent(giftName)+"/png/"+encodeURIComponent(modelName)+".png"}
+function modelImageUrl(giftName,modelName){return MODEL_ASSET_BASE+encodeURIComponent(giftName)+"/"+encodeURIComponent(modelName.toLowerCase().replace(/[^a-z0-9]+/g,"_"))+".webp"}
 let cart=JSON.parse(localStorage.getItem("pikoya-cart")||"[]");
 let orders=JSON.parse(localStorage.getItem("pikoya-orders")||"[]");
 let favorites=JSON.parse(localStorage.getItem("pikoya-favorites")||"[]");
@@ -43,10 +42,10 @@ let nr=document.getElementById("nftResults");
 if(nr){
  const C=id=>document.getElementById(id);
  const search=C("nftSearch"),sort=C("nftSort"),models=C("nftModels"),status=C("nftSourceStatus"),calc=C("nftCalculator"),selectedName=C("nftSelectedName"),selectedArt=C("nftSelectedArt"),selectedDetails=C("nftSelectedDetails"),qty=C("nftQty");
- let allGifts=[],selectedGift=null,attrs=null,selectedModel="",backdrops=[],page=1;
+ let allGifts=[],selectedGift=null,attrs=null,selectedModel="";
  function esc(v){return String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
  function giftFloor(g){return Number(g.floor_price_ton??g.portal_price_ton??g.getgems_price_ton??g.tgmrkt_price_ton??0)} function normalizeAttrs(raw){if(!raw)return {models:{},backdrops:{},symbols:{}};const prices=v=>Array.isArray(v)?Object.fromEntries(v.filter(x=>x&&x.name).map(x=>[x.name,Number(x.price??x.price_ton??0)])):v||{};const bds=Array.isArray(raw.backdrops)?Object.fromEntries(raw.backdrops.filter(x=>x&&x.name).map(x=>[x.name,x])):Object.fromEntries(Object.entries(raw.backdrops||{}).map(([k,v])=>[k,typeof v==="object"?v:{price:Number(v||0)}]));return {models:prices(raw.models),backdrops:bds,symbols:prices(raw.symbols||raw.patterns)} }
- function backdropFor(name){return backdrops.find(x=>x.name===name)||null}
+ function backdropFor(name){return attrs&&attrs.backdrops?attrs.backdrops[name]||null:null}
  function backdropStyle(name){const b=backdropFor(name);const h=b?.hex||b?.colors||b||{};const c=h.centerColor||h.center_color||h.center||h.color||"#d8b477";return "background:"+c}
  function modelPrice(name){return attrs&&attrs.models?Number(attrs.models[name]||0):0}
  function renderGifts(){
@@ -55,13 +54,10 @@ if(nr){
    if(sort.value==="priceAsc")list.sort((a,b)=>giftFloor(a)-giftFloor(b));
    else if(sort.value==="priceDesc")list.sort((a,b)=>giftFloor(b)-giftFloor(a));
    else if(sort.value==="name")list.sort((a,b)=>a.full_name.localeCompare(b.full_name));
-   const pages=Math.max(1,Math.ceil(list.length/NFT_PAGE_SIZE));page=Math.min(page,pages);
-   const shown=list.slice((page-1)*NFT_PAGE_SIZE,page*NFT_PAGE_SIZE);
-   nr.innerHTML=shown.map((g)=>'<button class="nft-market-card" data-gift-short="'+esc(g.short_name)+'"><div class="nft-card-image"><img loading="lazy" decoding="async" src="'+esc(nftImageUrl(g.short_name))+'" alt="'+esc(g.full_name)+'"><span class="nft-card-badge">NFT</span></div><div class="nft-card-info"><div><strong>'+esc(g.full_name)+'</strong><small>'+esc(g.type||"collectible")+'</small></div><b>'+tonToman(giftFloor(g))+'</b></div><div class="nft-card-foot"><span>From '+giftFloor(g).toLocaleString("en-US")+' TON</span><span>View models →</span></div></button>').join("")||'<div class="empty">هیچ گیفتی پیدا نشد.</div>';
-   if(list.length>shown.length)nr.insertAdjacentHTML("afterend",'<div class="nft-pagination"><button class="btn alt" id="nftPrev" '+(page===1?"disabled":"")+' >Previous</button><span>'+page+' / '+pages+' · '+list.length+' gifts</span><button class="btn alt" id="nftNext" '+(page===pages?"disabled":"")+' >Next</button></div>');
+   nr.innerHTML=list.map(g=>'<button class="nft-market-card" data-gift-short="'+esc(g.short_name)+'"><div class="nft-card-image"><img loading="lazy" decoding="async" src="'+esc(nftImageUrl(g.short_name))+'" alt="'+esc(g.full_name)+'"><span class="nft-card-badge">NFT</span></div><div class="nft-card-info"><div><strong>'+esc(g.full_name)+'</strong><small>'+esc(g.type||"collectible")+'</small></div><b>'+tonToman(giftFloor(g))+'</b></div><div class="nft-card-foot"><span>From '+giftFloor(g).toLocaleString("en-US")+' TON</span><span>View models →</span></div></button>').join("")||'<div class="empty">هیچ گیفتی پیدا نشد.</div>';
    document.querySelectorAll("[data-gift-short]").forEach(b=>b.onclick=()=>openGift(b.dataset.giftShort));
-   const prev=C("nftPrev"),next=C("nftNext");if(prev)prev.onclick=()=>{page--;renderGifts()};if(next)next.onclick=()=>{page++;renderGifts()};
-}
+   status.textContent=list.length+" گیفت آماده نمایش است.";
+ }
 async function openGift(shortName){
    selectedGift=allGifts.find(g=>g.short_name===shortName)||null;selectedModel="";attrs=null;
    if(!selectedGift)return;
@@ -87,8 +83,8 @@ async function openGift(shortName){
  qty&&qty.addEventListener("input",updateTotal);
  const clear=C("nftCloseSelection");if(clear)clear.onclick=()=>{selectedGift=null;selectedModel="";attrs=null;calc.style.display="none";models.innerHTML="";window.scrollTo({top:0,behavior:"smooth"})};
  const na=C("nftAddCart");if(na)na.onclick=()=>{if(!selectedGift||!selectedModel)return alert("Choose a model first.");const q=Math.max(1,Number(qty.value)||1),unit=modelPrice(selectedModel)||giftFloor(selectedGift);cart.push({name:"NFT · "+selectedGift.full_name,plan:"Model: "+selectedModel,quantity:q,unitPrice:unit,total:unit*q,currency:"TON",totalToman:Math.round(unit*q*TON_TO_TOMAN),username:C("nftUsername").value,note:C("nftNote").value});save();alert("Added to cart.");location.hash="#cart"};
- search.addEventListener("input",()=>{page=1;renderGifts()});sort.addEventListener("change",()=>{page=1;renderGifts()});
- async function init(){try{const source=await getNftSource();allGifts=nftGiftCatalog(source);status.textContent=allGifts.length+" گیفت در کاتالوگ فعلی پیدا شد. هر صفحه فقط "+NFT_PAGE_SIZE+" گیفت را بارگذاری می‌کند.";renderGifts()}catch(e){status.textContent="اتصال کاتالوگ فعلاً در دسترس نیست.";nr.innerHTML='<div class="empty">کاتالوگ گیفت‌ها فعلاً قابل دریافت نیست.</div>'}}
+ search.addEventListener("input",renderGifts);sort.addEventListener("change",renderGifts);
+ async function init(){try{const source=await getNftSource();allGifts=nftGiftCatalog(source);status.textContent=allGifts.length+" گیفت از منبع به‌روز دریافت شد.";renderGifts()}catch(e){status.textContent="اتصال کاتالوگ فعلاً در دسترس نیست.";nr.innerHTML='<div class="empty">کاتالوگ گیفت‌ها فعلاً قابل دریافت نیست.</div>'}}
  init();
 }
 }
