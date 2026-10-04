@@ -1,5 +1,5 @@
 const services={
- premium:{name:"Premium",mark:"P",desc:"",plans:[["1 Month",""],["3 Months","— تومان"],["6 Months","— تومان"],["12 Months","— تومان"]]},
+ premium:{name:"Premium",mark:"P",desc:"",plans:[["1 Month",""],["3 Months","3,300 / 3,600 تومان"],["6 Months","4,300 / 4,600 تومان"],["12 Months","7,800 / 8,150 تومان"]]},
  stars:{name:"Stars",mark:"S",desc:"",plans:[["50 Stars","— تومان"],["100 Stars","— تومان"],["250 Stars","— تومان"],["500 Stars","— تومان"]]},
  boost:{name:"Boost",mark:"B",desc:"",plans:[["1 Boost","— تومان"],["4 Boosts","— تومان"],["7 Boosts","— تومان"],["14 Boosts","— تومان"]]},
  nft:{name:"NFT",mark:"N",desc:"",plans:[["Basic","— تومان"],["Classic","— تومان"],["Premium","— تومان"],["Custom","— تومان"]]}
