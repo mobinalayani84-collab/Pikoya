@@ -9,6 +9,7 @@ const NFT_BASE="https://cdn.jsdelivr.net/gh/ssamy2/TelegramGiftsAssests@main/";
 const BACKDROP_SOURCE="https://cdn.jsdelivr.net/gh/ssamy2/TelegramGiftsAssests@main/backdrops/";
 const MODEL_ASSET_BASE="https://cdn.changes.tg/gifts/models/";
 const TON_TO_TOMAN=170000;
+const NFT_PAGE_SIZE=24;
 let nftSourcePromise=null;
 const nftAttrCache=new Map();
 async function getNftSource(){if(!nftSourcePromise)nftSourcePromise=fetch(NFT_SOURCE,{cache:"no-store"}).then(r=>{if(!r.ok)throw new Error("NFT source unavailable");return r.json()});return nftSourcePromise}
@@ -42,7 +43,7 @@ let nr=document.getElementById("nftResults");
 if(nr){
  const C=id=>document.getElementById(id);
  const search=C("nftSearch"),sort=C("nftSort"),models=C("nftModels"),status=C("nftSourceStatus"),calc=C("nftCalculator"),selectedName=C("nftSelectedName"),selectedArt=C("nftSelectedArt"),selectedDetails=C("nftSelectedDetails"),qty=C("nftQty");
- let allGifts=[],selectedGift=null,attrs=null,selectedModel="",backdrops=[],visibleCount=24;
+ let allGifts=[],selectedGift=null,attrs=null,selectedModel="",backdrops=[],page=1;
  function esc(v){return String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
  function giftFloor(g){return Number(g.floor_price_ton??g.portal_price_ton??g.getgems_price_ton??g.tgmrkt_price_ton??0)} function normalizeAttrs(raw){if(!raw)return {models:{},backdrops:{},symbols:{}};const prices=v=>Array.isArray(v)?Object.fromEntries(v.filter(x=>x&&x.name).map(x=>[x.name,Number(x.price??x.price_ton??0)])):v||{};const bds=Array.isArray(raw.backdrops)?Object.fromEntries(raw.backdrops.filter(x=>x&&x.name).map(x=>[x.name,x])):Object.fromEntries(Object.entries(raw.backdrops||{}).map(([k,v])=>[k,typeof v==="object"?v:{price:Number(v||0)}]));return {models:prices(raw.models),backdrops:bds,symbols:prices(raw.symbols||raw.patterns)} }
  function backdropFor(name){return backdrops.find(x=>x.name===name)||null}
@@ -86,7 +87,7 @@ async function openGift(shortName){
  qty&&qty.addEventListener("input",updateTotal);
  const clear=C("nftCloseSelection");if(clear)clear.onclick=()=>{selectedGift=null;selectedModel="";attrs=null;calc.style.display="none";models.innerHTML="";window.scrollTo({top:0,behavior:"smooth"})};
  const na=C("nftAddCart");if(na)na.onclick=()=>{if(!selectedGift||!selectedModel)return alert("Choose a model first.");const q=Math.max(1,Number(qty.value)||1),unit=modelPrice(selectedModel)||giftFloor(selectedGift);cart.push({name:"NFT · "+selectedGift.full_name,plan:"Model: "+selectedModel,quantity:q,unitPrice:unit,total:unit*q,currency:"TON",totalToman:Math.round(unit*q*TON_TO_TOMAN),username:C("nftUsername").value,note:C("nftNote").value});save();alert("Added to cart.");location.hash="#cart"};
- search.addEventListener("input",()=>{visibleCount=24;renderGifts()});sort.addEventListener("change",()=>{visibleCount=24;renderGifts()});
+ search.addEventListener("input",()=>{page=1;renderGifts()});sort.addEventListener("change",()=>{page=1;renderGifts()});
  async function init(){try{const source=await getNftSource();allGifts=nftGiftCatalog(source);status.textContent=allGifts.length+" گیفت در کاتالوگ فعلی پیدا شد. هر صفحه فقط "+NFT_PAGE_SIZE+" گیفت را بارگذاری می‌کند.";renderGifts()}catch(e){status.textContent="اتصال کاتالوگ فعلاً در دسترس نیست.";nr.innerHTML='<div class="empty">کاتالوگ گیفت‌ها فعلاً قابل دریافت نیست.</div>'}}
  init();
 }
