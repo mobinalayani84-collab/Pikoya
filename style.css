@@ -148,3 +148,12 @@ footer{width:100%;margin:0;position:relative;z-index:5;display:grid;grid-templat
  .nft-detail-top h2{font-size:40px}
  .nft-backdrop-grid{grid-template-columns:repeat(2,1fr)}
 }
+
+.nft-collection-dropdown{margin-top:12px;border:1px solid var(--line);background:var(--paper);box-shadow:0 8px 22px #24140e22}
+.nft-collection-dropdown>summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;padding:15px 18px;color:var(--brown);font:600 25px/1 "Cormorant Garamond",serif}
+.nft-collection-dropdown>summary::-webkit-details-marker{display:none}
+.nft-collection-dropdown>summary:after{content:"+";font:28px/1 "DM Sans",sans-serif;font-weight:300}
+.nft-collection-dropdown[open]>summary:after{content:"−"}
+.nft-collection-dropdown>summary span{margin-left:auto;margin-right:14px;font:10px "DM Sans",sans-serif;color:var(--brown2)}
+.nft-collection-dropdown .nft-collection-shell{margin:0;border:0;box-shadow:none}
+@media(max-width:620px){.nft-collection-dropdown>summary{padding:13px 12px;font-size:23px}.nft-collection-dropdown>summary span{font-size:9px}}
