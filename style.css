@@ -53,3 +53,28 @@ footer{width:100%;margin:0;position:relative;z-index:5;display:grid;grid-templat
 /* NFT marketplace clarity */
 .nft-market-head{margin-bottom:18px}.nft-market-head p{max-width:560px}.nft-filter-main{grid-template-columns:2fr 1fr;max-width:520px}.nft-toolbar{padding:16px 18px}.nft-status{margin:8px 0 14px}.nft-market-grid{gap:12px}.nft-card-image{height:205px;background:#d8b477;isolation:isolate}.nft-card-image:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 50% 45%,#f5dfad 0,#d8b477 62%,#b98548 100%);z-index:-2}.nft-card-image img{position:relative;z-index:1;width:88%;height:88%;padding:10px;object-fit:contain;filter:drop-shadow(0 10px 12px #24140e55)}.nft-card-backdrop{position:absolute;inset:14px;border:1px solid #fff3cf66;z-index:0;pointer-events:none}.nft-card-info{padding:11px 13px 5px}.nft-card-info strong{font-size:22px}.nft-card-foot{padding:7px 13px 12px}.nft-buy-panel{margin-top:8px}
 @media(max-width:620px){.nft-filter-main{grid-template-columns:1fr}.nft-card-image{height:225px}}
+
+
+/* NFT model browser */
+.nft-models-panel{margin:8px 0 35px}
+.nft-models-head{display:flex;justify-content:space-between;align-items:end;gap:20px;border-bottom:1px solid var(--line);padding:0 0 15px;margin-bottom:15px}
+.nft-models-head h3{margin:4px 0;font:600 38px/1 "Cormorant Garamond",serif;color:var(--paper)}
+.nft-models-head p{margin:5px 0 0;color:#e8d5b8;font-size:12px}
+.nft-rate{color:var(--gold2);font-size:11px;white-space:nowrap}
+.nft-model-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.nft-model-card{display:block;padding:0;text-align:left;border:1px solid var(--line);background:var(--paper);cursor:pointer;overflow:hidden;transition:.16s;box-shadow:0 7px 18px #24140e22}
+.nft-model-card:hover{transform:translateY(-2px);border-color:var(--brown);box-shadow:0 10px 22px #24140e44}
+.nft-model-art{height:180px;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.nft-model-art img{width:88%;height:88%;object-fit:contain;filter:drop-shadow(0 8px 9px #24140e44)}
+.nft-model-art span{position:absolute;left:9px;bottom:8px;padding:4px 6px;background:#24140ecc;color:#fff3cf;font-size:8px}
+.nft-model-copy{padding:10px 11px 12px}
+.nft-model-copy strong{display:block;color:var(--brown);font:600 20px/1.05 "Cormorant Garamond",serif}
+.nft-model-copy b{display:block;color:var(--burg);font-size:12px;margin-top:7px}
+.nft-model-copy small{display:block;color:var(--brown2);font-size:9px;margin-top:3px}
+.nft-selected-art{padding:0!important;border:0!important;background:none!important}
+.nft-selected-stage{height:260px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.nft-selected-stage img{width:88%;height:88%;object-fit:contain;filter:drop-shadow(0 10px 12px #24140e55)}
+.nft-backdrop-note{margin-top:10px;padding:8px 10px;background:#fffdf5;border:1px solid var(--line);font-size:10px;color:var(--brown2)}
+@media(max-width:1000px){.nft-model-grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:760px){.nft-model-grid{grid-template-columns:repeat(2,1fr)}.nft-models-head{display:block}.nft-rate{margin-top:8px}}
+@media(max-width:480px){.nft-model-grid{grid-template-columns:1fr}.nft-model-art{height:230px}}
