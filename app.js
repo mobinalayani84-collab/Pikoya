@@ -13,7 +13,7 @@ let nftSourcePromise=null;
 const nftAttrCache=new Map();
 async function getNftSource(){if(!nftSourcePromise)nftSourcePromise=fetch(NFT_SOURCE,{cache:"force-cache"}).then(r=>{if(!r.ok)throw new Error("NFT source unavailable");return r.json()});return nftSourcePromise}
 async function getNftAttributes(shortName,gift){if(nftAttrCache.has(shortName))return nftAttrCache.get(shortName);const path=gift&&gift.models?String(gift.models).replace(/^\//,""):"models/"+shortName+"/prices.json";const p=fetch(NFT_BASE+path+"?v=20261004",{cache:"no-store"}).then(r=>{if(!r.ok)throw new Error("Gift attributes unavailable");return r.json()});nftAttrCache.set(shortName,p);return p}
-function nftGiftCatalog(data){const seen=new Map();const add=(arr,type)=>{(arr||[]).forEach(x=>{if(!x||!x.full_name)return;const key=x.full_name.toLowerCase();if(!seen.has(key))seen.set(key,{...x,type})})};add(data.upgraded,"collectible");add(data.unupgraded,"unupgraded");add(data.regular_gifts,"regular");return [...seen.values()].sort((a,b)=>a.full_name.localeCompare(b.full_name))}
+function nftGiftCatalog(data){return (data.upgraded||[]).filter(x=>x&&x.full_name&&x.models).map(x=>({...x,type:"collectible"})).sort((a,b)=>a.full_name.localeCompare(b.full_name))}
 function tonToman(n){return Math.round(Number(n||0)*TON_TO_TOMAN).toLocaleString("en-US")+" تومان"}
 function tonMoney(n){return Number(n||0).toLocaleString("en-US",{maximumFractionDigits:4})+" TON · "+tonToman(n)}
 function money(n){return Number(n||0).toLocaleString("en-US")+" تومان"}
