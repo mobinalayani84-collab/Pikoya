@@ -4,7 +4,7 @@ const services={
  boost:{name:"Boost",mark:"B",desc:"",plans:[["1 Day","9,000 تومان"],["1 Month","85,000 تومان"],["3 Months","190,000 تومان"],["6 Months","260,000 تومان"],["1 Year","380,000 تومان"]]},
  nft:{name:"NFT",mark:"N",desc:""}
 };
-const NFT_SOURCE="https://cdn.jsdelivr.net/gh/ssamy2/TelegramGiftsAssests@main/Gifts_Details.json";
+const NFT_SOURCE="https://raw.githubusercontent.com/ssamy2/TelegramGiftsAssests/main/Gifts_Details.json";
 const NFT_BASE="https://cdn.jsdelivr.net/gh/ssamy2/TelegramGiftsAssests@main/";
 const BACKDROP_SOURCE="https://cdn.jsdelivr.net/gh/ssamy2/TelegramGiftsAssests@main/backdrops/";
 const MODEL_ASSET_BASE="https://cdn.changes.tg/gifts/models/";
