@@ -64,6 +64,9 @@ footer{width:100%;margin:0;position:relative;z-index:5;display:grid;grid-templat
 .nft-model-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
 .nft-model-card{display:block;padding:0;text-align:left;border:1px solid var(--line);background:var(--paper);cursor:pointer;overflow:hidden;transition:.16s;box-shadow:0 7px 18px #24140e22}
 .nft-model-card:hover{transform:translateY(-2px);border-color:var(--brown);box-shadow:0 10px 22px #24140e44}
+.nft-animated-art{width:88%;height:88%;display:flex;align-items:center;justify-content:center}
+.nft-animated-art svg{width:100%;height:100%;display:block}
+.nft-animated-art img{width:100%!important;height:100%!important;object-fit:contain}
 .nft-model-art{height:180px;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden}
 .nft-model-art img{width:88%;height:88%;object-fit:contain;filter:drop-shadow(0 8px 9px #24140e44)}
 .nft-model-art span{position:absolute;left:9px;bottom:8px;padding:4px 6px;background:#24140ecc;color:#fff3cf;font-size:8px}
