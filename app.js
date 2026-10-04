@@ -12,7 +12,7 @@ async function getNftSource(){if(!nftSourcePromise)nftSourcePromise=fetch(NFT_SO
 async function getNftAttributes(shortName){if(nftAttrCache.has(shortName))return nftAttrCache.get(shortName);const p=fetch(NFT_BASE+"models/"+encodeURIComponent(shortName)+"/prices.json",{cache:"no-store"}).then(r=>{if(!r.ok)throw new Error("Gift attributes unavailable");return r.json()});nftAttrCache.set(shortName,p);return p}
 function nftGiftCatalog(data){const seen=new Map();const add=(arr,type)=>{(arr||[]).forEach(x=>{if(!x||!x.full_name)return;const key=x.full_name.toLowerCase();if(!seen.has(key))seen.set(key,{...x,type})})};add(data.upgraded,"collectible");add(data.unupgraded,"unupgraded");add(data.regular_gifts,"regular");return [...seen.values()].sort((a,b)=>a.full_name.localeCompare(b.full_name))}
 function tonMoney(n){return Number(n||0).toLocaleString("en-US",{maximumFractionDigits:4})+" TON"}
-function nftImageUrl(shortName){return "https://fragment.com/file/gifts/"+encodeURIComponent(shortName)+"/thumb.webp"}
+function nftImageUrl(shortName){return NFT_BASE+"webp/by_name/"+encodeURIComponent(shortName)+".webp"}
 function money(n){return Number(n||0).toLocaleString("en-US")+" تومان"}
 let cart=JSON.parse(localStorage.getItem("pikoya-cart")||"[]");
 let orders=JSON.parse(localStorage.getItem("pikoya-orders")||"[]");
