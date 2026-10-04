@@ -33,6 +33,7 @@ let cart=JSON.parse(localStorage.getItem("pikoya-cart")||"[]");
 let orders=JSON.parse(localStorage.getItem("pikoya-orders")||"[]");
 let favorites=JSON.parse(localStorage.getItem("pikoya-favorites")||"[]");
 const app=document.getElementById("app");
+const C=id=>document.getElementById(id);
 function save(){localStorage.setItem("pikoya-cart",JSON.stringify(cart));localStorage.setItem("pikoya-orders",JSON.stringify(orders));localStorage.setItem("pikoya-favorites",JSON.stringify(favorites));updateCount()}
 function updateCount(){document.getElementById("cart-count").textContent=cart.length}
 function shell(title,body){return '<section class="page"><div class="wrap"><div class="eyebrow">Pikoya</div><h1>'+title+'</h1>'+body+'</div></section>'}
