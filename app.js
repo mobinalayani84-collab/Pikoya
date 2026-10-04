@@ -18,7 +18,10 @@ function tonToman(n){return Math.round(Number(n||0)*TON_TO_TOMAN).toLocaleString
 function tonMoney(n){return Number(n||0).toLocaleString("en-US",{maximumFractionDigits:4})+" TON · "+tonToman(n)}
 function money(n){return Number(n||0).toLocaleString("en-US")+" تومان"}
 function nftImageUrl(shortName){return NFT_BASE+"webp/by_name/"+encodeURIComponent(shortName)+".webp"}
-function modelImageUrl(giftName,modelName){return MODEL_ASSET_BASE+encodeURIComponent(giftName)+"/"+encodeURIComponent(modelName.toLowerCase().replace(/[^a-z0-9]+/g,"_"))+".webp"}
+function modelFileName(modelName){return String(modelName||"").trim().toLowerCase().replace(/[^a-z0-9]+/g,"_").replace(/^_+|_+$/g,"")}
+function modelImageUrl(shortName,modelName){return MODEL_ASSET_BASE+encodeURIComponent(shortName)+"/"+encodeURIComponent(modelFileName(modelName))+".webp"}
+function modelTgsUrl(shortName,modelName){return MODEL_ASSET_BASE+encodeURIComponent(shortName)+"/"+encodeURIComponent(modelFileName(modelName))+".tgs"}
+async function animateTgs(container,url){if(!container||!window.lottie||!window.pako)return false;try{const r=await fetch(url,{cache:"force-cache"});if(!r.ok)throw new Error("TGS unavailable");const raw=new Uint8Array(await r.arrayBuffer());const json=JSON.parse(window.pako.ungzip(raw,{to:"string"}));container.innerHTML="";window.lottie.loadAnimation({container,renderer:"svg",loop:true,autoplay:true,animationData:json});return true}catch(e){console.warn("TGS animation unavailable",e);return false}}
 let cart=JSON.parse(localStorage.getItem("pikoya-cart")||"[]");
 let orders=JSON.parse(localStorage.getItem("pikoya-orders")||"[]");
 let favorites=JSON.parse(localStorage.getItem("pikoya-favorites")||"[]");
@@ -73,8 +76,9 @@ async function openGift(shortName){
      attrs=await getNftAttributes(selectedGift.short_name,selectedGift);
      const names=Object.keys(attrs.models||{}).sort((a,b)=>Number(attrs.models[a])-Number(attrs.models[b]));
      const defaultBackdrop=(Object.keys(attrs.backdrops||{})[0]||"");
-     models.innerHTML='<div class="nft-models-head"><div><div class="eyebrow">Models</div><h3>'+esc(selectedGift.full_name)+'</h3><p>'+names.length+' مدل موجود · برای دیدن جزئیات روی هر مدل بزن.</p></div><div class="nft-rate">1 TON = '+TON_TO_TOMAN.toLocaleString("en-US")+' تومان</div></div><div class="nft-model-grid">'+names.map((name,i)=>'<button class="nft-model-card" data-model-name="'+esc(name)+'"><div class="nft-model-art" style="'+backdropStyle(defaultBackdrop)+'"><img loading="lazy" src="'+esc(modelImageUrl(selectedGift.full_name,name))+'" alt="'+esc(name)+'"><span>'+esc(defaultBackdrop)+'</span></div><div class="nft-model-copy"><strong>'+esc(name)+'</strong><b>'+tonToman(modelPrice(name))+'</b><small>'+modelPrice(name).toLocaleString("en-US")+' TON</small></div></button>').join("")+'</div>';
+     models.innerHTML='<div class="nft-models-head"><div><div class="eyebrow">Models</div><h3>'+esc(selectedGift.full_name)+'</h3><p>'+names.length+' مدل موجود · برای دیدن جزئیات روی هر مدل بزن.</p></div><div class="nft-rate">1 TON = '+TON_TO_TOMAN.toLocaleString("en-US")+' تومان</div></div><div class="nft-model-grid">'+names.map((name,i)=>'<button class="nft-model-card" data-model-name="'+esc(name)+'"><div class="nft-model-art" style="'+backdropStyle(defaultBackdrop)+'"><div class="nft-animated-art" data-tgs="'+esc(modelTgsUrl(selectedGift.short_name,name))+'"><img loading="lazy" decoding="async" src="'+esc(modelImageUrl(selectedGift.short_name,name))+'" alt="'+esc(name)+'"></div><span>'+esc(defaultBackdrop)+'</span></div><div class="nft-model-copy"><strong>'+esc(name)+'</strong><b>'+tonToman(modelPrice(name))+'</b><small>'+modelPrice(name).toLocaleString("en-US")+' TON</small></div></button>').join("")+'</div>';
      document.querySelectorAll("[data-model-name]").forEach(b=>b.onclick=()=>selectModel(b.dataset.modelName));
+     document.querySelectorAll(".nft-animated-art[data-tgs]").forEach(el=>animateTgs(el,el.dataset.tgs));
      status.textContent=allGifts.length+" گیفت در کاتالوگ · "+names.length+" مدل برای این گیفت.";
    }catch(e){
      console.error("NFT attributes error",e);
@@ -87,8 +91,9 @@ async function openGift(shortName){
    const backdropNames=Object.keys(attrs.backdrops||{});
    selectedBackdrop=selectedBackdrop&&attrs.backdrops[selectedBackdrop]?selectedBackdrop:(backdropNames[0]||"");
    const options=backdropNames.map(b=>'<button type="button" class="nft-backdrop-choice'+(b===selectedBackdrop?" selected":"")+'" data-backdrop-name="'+esc(b)+'"><i style="'+backdropStyle(b)+'"></i><span>'+esc(b)+'</span><small>'+Number(attrs.backdrops[b]?.price||attrs.backdrops[b]||0).toLocaleString("en-US")+' TON</small></button>').join("");
-   selectedArt.innerHTML='<div class="nft-selected-stage" style="'+backdropStyle(selectedBackdrop)+'"><img src="'+esc(modelImageUrl(selectedGift.full_name,name))+'" alt="'+esc(name)+'"></div><div class="nft-backdrop-label">Backdrop / رنگ پس‌زمینه</div><div class="nft-backdrop-grid">'+(options||'<span class="nft-backdrop-empty">Backdrop ندارد</span>')+'</div>';
+   selectedArt.innerHTML='<div class="nft-selected-stage" style="'+backdropStyle(selectedBackdrop)+'"><div class="nft-animated-art" id="nftSelectedAnimation" data-tgs="'+esc(modelTgsUrl(selectedGift.short_name,name))+'"><img src="'+esc(modelImageUrl(selectedGift.short_name,name))+'" alt="'+esc(name)+'"></div></div><div class="nft-backdrop-label">Backdrop / رنگ پس‌زمینه</div><div class="nft-backdrop-grid">'+(options||'<span class="nft-backdrop-empty">Backdrop ندارد</span>')+'</div>';
    document.querySelectorAll("[data-backdrop-name]").forEach(b=>b.onclick=()=>{selectedBackdrop=b.dataset.backdropName;document.querySelectorAll(".nft-backdrop-choice").forEach(x=>x.classList.remove("selected"));b.classList.add("selected");selectedArt.querySelector(".nft-selected-stage").setAttribute("style",backdropStyle(selectedBackdrop));updateTotal()});
+   animateTgs(document.getElementById("nftSelectedAnimation"),modelTgsUrl(selectedGift.short_name,name));
    updateTotal();
    calc.scrollIntoView({behavior:"smooth",block:"center"});
  }
