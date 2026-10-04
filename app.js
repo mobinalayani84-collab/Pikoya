@@ -96,7 +96,7 @@ async function openGift(shortName){
  qty&&qty.addEventListener("input",updateTotal);
  const clear=C("nftCloseSelection");if(clear)clear.onclick=()=>{selectedGift=null;selectedModel="";selectedBackdrop="";attrs=null;calc.style.display="none";models.innerHTML="";window.scrollTo({top:0,behavior:"smooth"})};
  const na=C("nftAddCart");if(na)na.onclick=()=>{if(!selectedGift||!selectedModel)return alert("Choose a model first.");const q=Math.max(1,Number(qty.value)||1),unit=modelPrice(selectedModel)||giftFloor(selectedGift);cart.push({name:"NFT · "+selectedGift.full_name,plan:"Model: "+selectedModel+" · Backdrop: "+(selectedBackdrop||"Default"),quantity:q,unitPrice:unit,total:unit*q,currency:"TON",totalToman:Math.round(unit*q*TON_TO_TOMAN),username:C("nftUsername").value,note:C("nftNote").value});save();alert("Added to cart.");location.hash="#cart"};
- search.addEventListener("input",renderGifts);sort.addEventListener("change",renderGifts);
+ if(search&&sort){search.addEventListener("input",renderGifts);sort.addEventListener("change",renderGifts)}
  async function init(){try{const source=await getNftSource();allGifts=nftGiftCatalog(source);status.textContent=allGifts.length+" کالکشن از منبع به‌روز دریافت شد.";const detail=document.querySelector(".nft-detail-page");if(detail){const initial=decodeURIComponent(detail.dataset.nftGift||"");if(initial)await openGift(initial)}else{renderGifts()}}catch(e){status.textContent="اتصال کاتالوگ فعلاً در دسترس نیست.";nr.innerHTML='<div class="empty">کاتالوگ گیفت‌ها فعلاً قابل دریافت نیست.</div>'}}
  init();
 }
