@@ -7,7 +7,7 @@ const services={
 const NFT_SOURCE="https://cdn.jsdelivr.net/gh/ssamy2/TelegramGiftsAssests@main/Gifts_Details.json";
 const NFT_BASE="https://cdn.jsdelivr.net/gh/ssamy2/TelegramGiftsAssests@main/";
 const BACKDROP_SOURCE="https://cdn.jsdelivr.net/gh/ssamy2/TelegramGiftsAssests@main/backdrops/";
-const MODEL_ASSET_BASE="https://cdn.jsdelivr.net/gh/ssamy2/TelegramGiftsAssests@main/models/";
+const MODEL_ASSET_BASE="https://cdn.changes.tg/gifts/models/";
 const TON_TO_TOMAN=170000;
 let nftSourcePromise=null;
 const nftAttrCache=new Map();
@@ -44,7 +44,7 @@ if(nr){
  const search=C("nftSearch"),sort=C("nftSort"),models=C("nftModels"),status=C("nftSourceStatus"),calc=C("nftCalculator"),selectedName=C("nftSelectedName"),selectedArt=C("nftSelectedArt"),selectedDetails=C("nftSelectedDetails"),qty=C("nftQty");
  let allGifts=[],selectedGift=null,attrs=null,selectedModel="",backdrops=[],visibleCount=24;
  function esc(v){return String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
- function giftFloor(g){return Number(g.floor_price_ton??g.portal_price_ton??g.getgems_price_ton??g.tgmrkt_price_ton??0)}
+ function giftFloor(g){return Number(g.floor_price_ton??g.portal_price_ton??g.getgems_price_ton??g.tgmrkt_price_ton??0)} function normalizeAttrs(raw){if(!raw)return {models:{},backdrops:{},symbols:{}};const map=(v,key="name",priceKey="price")=>Array.isArray(v)?Object.fromEntries(v.filter(x=>x&&x[key]).map(x=>[x[key],Number(x[priceKey]??x.price_ton??0)])):v||{};return {models:map(raw.models),backdrops:map(raw.backdrops),symbols:map(raw.symbols||raw.patterns)} }
  function backdropFor(name){return backdrops.find(x=>x.name===name)||null}
  function backdropStyle(name){const b=backdropFor(name);const h=b?.hex||b?.colors||b||{};const c=h.centerColor||h.center_color||h.center||h.color||"#d8b477";return "background:"+c}
  function modelPrice(name){return attrs&&attrs.models?Number(attrs.models[name]||0):0}
