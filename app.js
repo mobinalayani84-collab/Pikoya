@@ -12,7 +12,7 @@ const TON_TO_TOMAN=170000;
 let nftSourcePromise=null;
 const nftAttrCache=new Map();
 async function getNftSource(){if(!nftSourcePromise)nftSourcePromise=fetch(NFT_SOURCE,{cache:"force-cache"}).then(r=>{if(!r.ok)throw new Error("NFT source unavailable");return r.json()});return nftSourcePromise}
-async function getNftAttributes(shortName){if(nftAttrCache.has(shortName))return nftAttrCache.get(shortName);const p=fetch(NFT_BASE+"models/"+shortName+"/prices.json",{cache:"force-cache"}).then(r=>{if(!r.ok)throw new Error("Gift attributes unavailable");return r.json()});nftAttrCache.set(shortName,p);return p}
+async function getNftAttributes(shortName,gift){if(nftAttrCache.has(shortName))return nftAttrCache.get(shortName);const path=gift&&gift.models?String(gift.models).replace(/^\//,""):"models/"+shortName+"/prices.json";const p=fetch(NFT_BASE+path+"?v=20261004",{cache:"no-store"}).then(r=>{if(!r.ok)throw new Error("Gift attributes unavailable");return r.json()});nftAttrCache.set(shortName,p);return p}
 function nftGiftCatalog(data){const seen=new Map();const add=(arr,type)=>{(arr||[]).forEach(x=>{if(!x||!x.full_name)return;const key=x.full_name.toLowerCase();if(!seen.has(key))seen.set(key,{...x,type})})};add(data.upgraded,"collectible");add(data.unupgraded,"unupgraded");add(data.regular_gifts,"regular");return [...seen.values()].sort((a,b)=>a.full_name.localeCompare(b.full_name))}
 function tonToman(n){return Math.round(Number(n||0)*TON_TO_TOMAN).toLocaleString("en-US")+" تومان"}
 function tonMoney(n){return Number(n||0).toLocaleString("en-US",{maximumFractionDigits:4})+" TON · "+tonToman(n)}
@@ -70,13 +70,17 @@ async function openGift(shortName){
    models.innerHTML='<div class="empty">در حال دریافت همه مدل‌های '+esc(selectedGift.full_name)+'…</div>';
    models.scrollIntoView({behavior:"smooth",block:"start"});
    try{
-     attrs=await getNftAttributes(selectedGift.short_name);
+     attrs=await getNftAttributes(selectedGift.short_name,selectedGift);
      const names=Object.keys(attrs.models||{}).sort((a,b)=>Number(attrs.models[a])-Number(attrs.models[b]));
      const defaultBackdrop=(Object.keys(attrs.backdrops||{})[0]||"");
      models.innerHTML='<div class="nft-models-head"><div><div class="eyebrow">Models</div><h3>'+esc(selectedGift.full_name)+'</h3><p>'+names.length+' مدل موجود · برای دیدن جزئیات روی هر مدل بزن.</p></div><div class="nft-rate">1 TON = '+TON_TO_TOMAN.toLocaleString("en-US")+' تومان</div></div><div class="nft-model-grid">'+names.map((name,i)=>'<button class="nft-model-card" data-model-name="'+esc(name)+'"><div class="nft-model-art" style="'+backdropStyle(defaultBackdrop)+'"><img loading="lazy" src="'+esc(modelImageUrl(selectedGift.full_name,name))+'" alt="'+esc(name)+'"><span>'+esc(defaultBackdrop)+'</span></div><div class="nft-model-copy"><strong>'+esc(name)+'</strong><b>'+tonToman(modelPrice(name))+'</b><small>'+modelPrice(name).toLocaleString("en-US")+' TON</small></div></button>').join("")+'</div>';
      document.querySelectorAll("[data-model-name]").forEach(b=>b.onclick=()=>selectModel(b.dataset.modelName));
      status.textContent=allGifts.length+" گیفت در کاتالوگ · "+names.length+" مدل برای این گیفت.";
-   }catch(e){models.innerHTML='<div class="empty">مدل‌های این گیفت فعلاً در دسترس نیستند.</div>'}
+   }catch(e){
+     console.error("NFT attributes error",e);
+     const fallbackNames=Object.keys((selectedGift&&selectedGift.models_data)||{});
+     models.innerHTML='<div class="empty">مدل‌های این کالکشن فعلاً قابل دریافت نیستند.<br><small>'+esc(e.message||"Unknown error")+'</small></div>'
+   }
  }
  function selectModel(name){
    selectedModel=name;calc.style.display="block";selectedName.textContent=selectedGift.full_name+" · "+name;
