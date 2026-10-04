@@ -54,7 +54,7 @@ if(nr){
    if(sort.value==="priceAsc")list.sort((a,b)=>giftFloor(a)-giftFloor(b));
    else if(sort.value==="priceDesc")list.sort((a,b)=>giftFloor(b)-giftFloor(a));
    else if(sort.value==="name")list.sort((a,b)=>a.full_name.localeCompare(b.full_name));
-   nr.innerHTML=list.map(g=>'<button class="nft-market-card" data-gift-short="'+esc(g.short_name)+'"><div class="nft-card-image"><img loading="lazy" decoding="async" src="'+esc(nftImageUrl(g.short_name))+'" alt="'+esc(g.full_name)+'"><span class="nft-card-badge">NFT</span></div><div class="nft-card-info"><div><strong>'+esc(g.full_name)+'</strong><small>'+esc(g.type||"collectible")+'</small></div><b>'+tonToman(giftFloor(g))+'</b></div><div class="nft-card-foot"><span>From '+giftFloor(g).toLocaleString("en-US")+' TON</span><span>View models →</span></div></button>').join("")||'<div class="empty">هیچ گیفتی پیدا نشد.</div>';
+   nr.innerHTML=list.map(g=>'<button class="nft-market-card" data-gift-short="'+esc(g.short_name)+'"><div class="nft-gift-thumb"><img loading="lazy" decoding="async" src="'+esc(nftImageUrl(g.short_name))+'" alt="'+esc(g.full_name)+'"></div><div class="nft-gift-main"><strong>'+esc(g.full_name)+'</strong><small>'+esc(g.type||"collectible")+' · '+giftFloor(g).toLocaleString("en-US")+' TON</small></div><div class="nft-gift-action"><b>'+tonToman(giftFloor(g))+'</b><span>View models →</span></div></button>').join("")||'<div class="empty">هیچ گیفتی پیدا نشد.</div>';
    document.querySelectorAll("[data-gift-short]").forEach(b=>b.onclick=()=>openGift(b.dataset.giftShort));
    status.textContent=list.length+" گیفت آماده نمایش است.";
  }
