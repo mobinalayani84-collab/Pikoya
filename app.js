@@ -8,13 +8,17 @@ const NFT_SOURCE="https://raw.githubusercontent.com/ssamy2/TelegramGiftsAssests/
 const NFT_BASE="https://raw.githubusercontent.com/ssamy2/TelegramGiftsAssests/main/";
 const BACKDROP_SOURCE="https://cdn.jsdelivr.net/gh/ssamy2/TelegramGiftsAssests@main/backdrops/";
 const MODEL_ASSET_BASE="https://raw.githubusercontent.com/ssamy2/TelegramGiftsAssests/main/models/";
-const TON_TO_TOMAN=170000;
+const TON_TO_TOMAN=413182;
+const NFT_COST_BUFFER=0.03;
+const NFT_PROFIT=0.10;
 let nftSourcePromise=null;
 const nftAttrCache=new Map();
 async function getNftSource(){if(!nftSourcePromise)nftSourcePromise=fetch(NFT_SOURCE,{cache:"force-cache"}).then(r=>{if(!r.ok)throw new Error("NFT source unavailable");return r.json()});return nftSourcePromise}
 async function getNftAttributes(shortName,gift){if(nftAttrCache.has(shortName))return nftAttrCache.get(shortName);const path=gift&&gift.models?String(gift.models).replace(/^\//,""):"models/"+shortName+"/prices.json";const p=fetch(NFT_BASE+path+"?v=20261004",{cache:"no-store"}).then(r=>{if(!r.ok)throw new Error("Gift attributes unavailable");return r.json()});nftAttrCache.set(shortName,p);return p}
 function nftGiftCatalog(data){return (data.upgraded||[]).filter(x=>x&&x.full_name&&x.models).map(x=>({...x,type:"collectible"})).sort((a,b)=>a.full_name.localeCompare(b.full_name))}
-function tonToman(n){return Math.round(Number(n||0)*TON_TO_TOMAN).toLocaleString("en-US")+" تومان"}
+function tonBaseToman(n){return Math.round(Number(n||0)*TON_TO_TOMAN)}
+function nftSellToman(n){return Math.round(tonBaseToman(n)*(1+NFT_COST_BUFFER)*(1+NFT_PROFIT))}
+function tonToman(n){return nftSellToman(n).toLocaleString("en-US")+" تومان"}
 function tonMoney(n){return Number(n||0).toLocaleString("en-US",{maximumFractionDigits:4})+" TON · "+tonToman(n)}
 function money(n){return Number(n||0).toLocaleString("en-US")+" تومان"}
 function nftImageUrl(shortName){return NFT_BASE+"webp/by_name/"+encodeURIComponent(shortName)+".webp"}
