@@ -17,9 +17,8 @@ const nftAttrCache=new Map();
 async function getNftSource(){if(!nftSourcePromise)nftSourcePromise=fetch(NFT_SOURCE,{cache:"force-cache"}).then(r=>{if(!r.ok)throw new Error("NFT source unavailable");return r.json()});return nftSourcePromise}
 async function getNftAttributes(shortName,gift){if(nftAttrCache.has(shortName))return nftAttrCache.get(shortName);const path=gift&&gift.models?String(gift.models).replace(/^\//,""):"models/"+shortName+"/prices.json";const p=fetch(NFT_BASE+path+"?v=20261004",{cache:"no-store"}).then(r=>{if(!r.ok)throw new Error("Gift attributes unavailable");return r.json()});nftAttrCache.set(shortName,p);return p}
 function nftGiftCatalog(data){return (data.upgraded||[]).filter(x=>x&&x.full_name&&x.models).map(x=>({...x,type:"collectible"})).sort((a,b)=>a.full_name.localeCompare(b.full_name))}
-function tonBaseToman(n){return Math.round(Number(n||0)*TON_TO_TOMAN)}
-function nftSellToman(n){return Math.round(tonBaseToman(n)*(1+NFT_COST_BUFFER)*(1+NFT_PROFIT))}
-function tonUsd(n){return nftSellToman(n).toLocaleString("en-US")+" USD"}
+function nftSellUsd(n){return Number(n||0)*TON_TO_USD*(1+NFT_COST_BUFFER)*(1+NFT_PROFIT)}
+function tonUsd(n){return nftSellUsd(n).toLocaleString("en-US",{style:"currency",currency:"USD",minimumFractionDigits:2,maximumFractionDigits:2})}
 function tonMoney(n){return Number(n||0).toLocaleString("en-US",{maximumFractionDigits:4})+" TON · "+tonUsd(n)}
 function money(n){return Number(n||0).toLocaleString("en-US")+" USD"}
 function numericPrice(text){const n=Number(String(text||"").replace(/[^0-9.]/g,""));return Number.isFinite(n)?n:0}
@@ -84,7 +83,44 @@ async function openGift(shortName){
      attrs=await getNftAttributes(selectedGift.short_name,selectedGift);
      const names=Object.keys(attrs.models||{}).sort((a,b)=>Number(attrs.models[a])-Number(attrs.models[b]));
      const defaultBackdrop=(Object.keys(attrs.backdrops||{})[0]||"");
-     models.innerHTML='<div class="nft-models-head"><div><div class="eyebrow">Models</div><h3>'+esc(selectedGift.full_name)+'</h3><p>'+names.length+' models available · click a model for details.</p></div><div class="nft-rate">Base rate: 1 TON = '+TON_TO_USD.toFixed(2)+' Toman · +3% costs · +10% profit</div></div><div class="nft-model-grid">'+names.map((name,i)=>'<button class="nft-model-card" data-model-name="'+esc(name)+'"><div class="nft-model-art" style="'+backdropStyle(defaultBackdrop)+'"><div class="nft-animated-art" data-tgs="'+esc(modelTgsUrl(selectedGift.short_name,name))+'"><img loading="lazy" decoding="async" src="'+esc(modelImageUrl(selectedGift.short_name,name))+'" alt="'+esc(name)+'"></div><span>'+esc(defaultBackdrop)+'</span></div><div class="nft-model-copy"><strong>'+esc(name)+'</strong><b>'+tonUsd(modelPrice(name))+'</b><small>'+modelPrice(name).toLocaleString("en-US")+' TON</small></div></button>').join("")+'</div>';
+     models.innerHTML='<div class="nft-models-head"><div><div class="eyebrow">Models</div><h3>'+esc(selectedGift.full_name)+'</h3><p>'+names.length+' models available · click a model for details.</p></div><div class="nft-rate">Base rate: 1 TON =  · +3% costs · +10% profit</div></div><div class="nft-model-grid">'+names.map((name,i)=>'<button class="nft-model-card" data-model-name="'+esc(name)+'"><div class="nft-model-art" style="'+backdropStyle(defaultBackdrop)+'"><div class="nft-animated-art" data-tgs="'+esc(modelTgsUrl(selectedGift.short_name,name))+'"><img loading="lazy" decoding="async" src="'+esc(modelImageUrl(selectedGift.short_name,name))+'" alt="'+esc(name)+'"></div><span>'+esc(defaultBackdrop)+'</span></div><div class="nft-model-copy"><strong>'+esc(name)+'</strong><b>'+tonUsd(modelPrice(name))+'</b><small>'+modelPrice(name).toLocaleString("en-US")+' TON</small></div></button>').join("")+'</div>';
+     document.querySelectorAll("[data-model-name]").forEach(b=>b.onclick=()=>selectModel(b.dataset.modelName));
+     document.querySelectorAll(".nft-animated-art[data-tgs]").forEach(el=>animateTgs(el,el.dataset.tgs));
+     status.textContent=allGifts.length+" gift in the catalog · "+names.length+" models for this gift.";
+   }catch(e){
+     console.error("NFT attributes error",e);
+     const fallbackNames=Object.keys((selectedGift&&selectedGift.models_data)||{});
+     models.innerHTML='<div class="empty">Models for this collection are currently unavailable.<br><small>'+esc(e.message||"Unknown error")+'</small></div>'
+   }
+ }
+ function selectModel(name){
+   selectedModel=name;calc.style.display="block";selectedName.textContent=selectedGift.full_name+" · "+name;
+   const backdropNames=Object.keys(attrs.backdrops||{});
+   selectedBackdrop=selectedBackdrop&&attrs.backdrops[selectedBackdrop]?selectedBackdrop:(backdropNames[0]||"");
+   const options=backdropNames.map(b=>'<button type="button" class="nft-backdrop-choice'+(b===selectedBackdrop?" selected":"")+'" data-backdrop-name="'+esc(b)+'"><i style="'+backdropStyle(b)+'"></i><span>'+esc(b)+'</span><small>'+Number(attrs.backdrops[b]?.price||attrs.backdrops[b]||0).toLocaleString("en-US")+' TON</small></button>').join("");
+   selectedArt.innerHTML='<div class="nft-selected-stage" style="'+backdropStyle(selectedBackdrop)+'"><div class="nft-animated-art" id="nftSelectedAnimation" data-tgs="'+esc(modelTgsUrl(selectedGift.short_name,name))+'"><img src="'+esc(modelImageUrl(selectedGift.short_name,name))+'" alt="'+esc(name)+'"></div></div><div class="nft-backdrop-label">Backdrop / Backdrop color</div><div class="nft-backdrop-grid">'+(options||'<span class="nft-backdrop-empty">No Backdrop available</span>')+'</div>';
+   document.querySelectorAll("[data-backdrop-name]").forEach(b=>b.onclick=()=>{selectedBackdrop=b.dataset.backdropName;document.querySelectorAll(".nft-backdrop-choice").forEach(x=>x.classList.remove("selected"));b.classList.add("selected");selectedArt.querySelector(".nft-selected-stage").setAttribute("style",backdropStyle(selectedBackdrop));updateTotal()});
+   animateTgs(document.getElementById("nftSelectedAnimation"),modelTgsUrl(selectedGift.short_name,name));
+   updateTotal();
+   calc.scrollIntoView({behavior:"smooth",block:"center"});
+ }
+ function updateTotal(){if(!selectedGift||!selectedModel)return;const unit=modelPrice(selectedModel)||giftFloor(selectedGift),q=Math.max(1,Number(qty.value)||1);document.getElementById("nftTotal").textContent=tonUsd(unit*q);selectedDetails.innerHTML='<strong>'+esc(selectedGift.full_name)+'</strong><br>Model: '+esc(selectedModel)+'<br>Backdrop: '+esc(selectedBackdrop||"Default")+'<br><b>'+unit.toLocaleString("en-US")+' TON · '+tonUsd(unit)+' each</b>'}
+ qty&&qty.addEventListener("input",updateTotal);
+ const clear=C("nftCloseSelection");if(clear)clear.onclick=()=>{selectedGift=null;selectedModel="";selectedBackdrop="";attrs=null;calc.style.display="none";models.innerHTML="";window.scrollTo({top:0,behavior:"smooth"})};
+ const na=C("nftAddCart");if(na)na.onclick=()=>{if(!selectedGift||!selectedModel)return alert("Choose a model first.");const q=Math.max(1,Number(qty.value)||1),unit=modelPrice(selectedModel)||giftFloor(selectedGift);cart.push({name:"NFT · "+selectedGift.full_name,plan:"Model: "+selectedModel,backdrop:selectedBackdrop||"Default",quantity:q,unitPrice:unit,total:unit*q,currency:"TON",totalUsd:nftSellUsd(unit*q),username:C("nftUsername").value,note:C("nftNote").value});save();alert("Added to cart.");location.hash="#cart"};
+ if(search&&sort){search.addEventListener("input",renderGifts);sort.addEventListener("change",renderGifts)}
+ async function init(){try{const source=await getNftSource();allGifts=nftGiftCatalog(source);status.textContent=allGifts.length+" Collection loaded from the latest source.";const detail=document.querySelector(".nft-detail-page");if(detail){const initial=decodeURIComponent(detail.dataset.nftGift||"");if(initial)await openGift(initial)}else{renderGifts()}}catch(e){status.textContent="Catalog connection is currently unavailable.";nr.innerHTML='<div class="empty">Gift catalog is currently unavailable.</div>'}}
+ init();
+}
+}
+window.addEventListener("hashchange",render);render();
+
+const drawer=document.getElementById("drawer"),backdrop=document.getElementById("backdrop");
+document.getElementById("menuBtn").onclick=()=>{drawer.classList.add("open");backdrop.classList.add("open")};
+document.getElementById("drawerClose").onclick=()=>{drawer.classList.remove("open");backdrop.classList.remove("open")};
+backdrop.onclick=()=>{drawer.classList.remove("open");backdrop.classList.remove("open")};
+document.querySelectorAll(".drawer a").forEach(a=>a.onclick=()=>{drawer.classList.remove("open");backdrop.classList.remove("open")});
++TON_TO_USD.toFixed(2) · +3% costs · +10% profit</div></div><div class="nft-model-grid">'+names.map((name,i)=>'<button class="nft-model-card" data-model-name="'+esc(name)+'"><div class="nft-model-art" style="'+backdropStyle(defaultBackdrop)+'"><div class="nft-animated-art" data-tgs="'+esc(modelTgsUrl(selectedGift.short_name,name))+'"><img loading="lazy" decoding="async" src="'+esc(modelImageUrl(selectedGift.short_name,name))+'" alt="'+esc(name)+'"></div><span>'+esc(defaultBackdrop)+'</span></div><div class="nft-model-copy"><strong>'+esc(name)+'</strong><b>'+tonUsd(modelPrice(name))+'</b><small>'+modelPrice(name).toLocaleString("en-US")+' TON</small></div></button>').join("")+'</div>';
      document.querySelectorAll("[data-model-name]").forEach(b=>b.onclick=()=>selectModel(b.dataset.modelName));
      document.querySelectorAll(".nft-animated-art[data-tgs]").forEach(el=>animateTgs(el,el.dataset.tgs));
      status.textContent=allGifts.length+" gift in the catalog · "+names.length+" models for this gift.";
