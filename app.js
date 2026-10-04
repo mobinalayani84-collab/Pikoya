@@ -29,13 +29,14 @@ function modelFileName(modelName){return String(modelName||"").trim().toLowerCas
 function modelImageUrl(shortName,modelName){return MODEL_ASSET_BASE+encodeURIComponent(shortName)+"/"+encodeURIComponent(modelFileName(modelName))+".webp"}
 function modelTgsUrl(shortName,modelName){return MODEL_ASSET_BASE+encodeURIComponent(shortName)+"/"+encodeURIComponent(modelFileName(modelName))+".tgs"}
 async function animateTgs(container,url){if(!container||!window.lottie||!window.pako)return false;try{const r=await fetch(url,{cache:"force-cache"});if(!r.ok)throw new Error("TGS unavailable");const raw=new Uint8Array(await r.arrayBuffer());const json=JSON.parse(window.pako.ungzip(raw,{to:"string"}));container.innerHTML="";window.lottie.loadAnimation({container,renderer:"svg",loop:true,autoplay:true,animationData:json});return true}catch(e){console.warn("TGS animation unavailable",e);return false}}
-let cart=JSON.parse(localStorage.getItem("pikoya-cart")||"[]");
-let orders=JSON.parse(localStorage.getItem("pikoya-orders")||"[]");
-let favorites=JSON.parse(localStorage.getItem("pikoya-favorites")||"[]");
+function loadList(key){try{const v=JSON.parse(localStorage.getItem(key)||"[]");return Array.isArray(v)?v:[]}catch(e){return []}}
+let cart=loadList("pikoya-cart");
+let orders=loadList("pikoya-orders");
+let favorites=loadList("pikoya-favorites");
 const app=document.getElementById("app");
 const C=id=>document.getElementById(id);
 function save(){localStorage.setItem("pikoya-cart",JSON.stringify(cart));localStorage.setItem("pikoya-orders",JSON.stringify(orders));localStorage.setItem("pikoya-favorites",JSON.stringify(favorites));updateCount()}
-function updateCount(){document.getElementById("cart-count").textContent=cart.length}
+function updateCount(){const el=document.getElementById("cart-count");if(el)el.textContent=cart.length}
 function shell(title,body){return '<section class="page"><div class="wrap"><div class="eyebrow">Pikoya</div><h1>'+title+'</h1>'+body+'</div></section>'}
 function home(){return '<div class="wrap"><section class="hero"><div class="hero-card"></div></section><h2 class="section-title">The collection</h2><div class="services">'+Object.entries(services).map(([k,s])=>card(k,s)).join("")+'</div></div>'}
 function card(k,s){return '<article class="service"><a class="service-link" href="#service/'+k+'"><img class="service-banner" loading="lazy" decoding="async" src="'+(k==="nft"?"file_000000008618821089451802e626503f.png":k==="stars"?"stars-banner.png":k+".png")+'" alt="'+s.name+' service"></a><div class="service-info"><div><h3>'+s.name+'</h3></div><a class="btn alt" href="#service/'+k+'">View service</a></div></article>'}
