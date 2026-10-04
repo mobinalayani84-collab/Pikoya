@@ -85,3 +85,24 @@ footer{width:100%;margin:0;position:relative;z-index:5;display:grid;grid-templat
 
 .nft-card-image:before{display:none!important}
 .nft-load-more{display:block;width:min(100%,420px);margin:4px auto 24px;text-align:center}
+
+/* NFT compact gift list */
+.nft-market-grid{display:block;margin-bottom:34px;background:var(--paper);border:1px solid var(--line)}
+.nft-market-card{display:grid;grid-template-columns:58px 1fr auto;align-items:center;gap:15px;width:100%;min-height:78px;padding:10px 14px;text-align:left;border:0;border-bottom:1px solid var(--line);background:var(--paper);cursor:pointer;box-shadow:none;transition:.14s}
+.nft-market-card:last-child{border-bottom:0}
+.nft-market-card:hover{background:#f4e7cb;transform:none;box-shadow:none}
+.nft-gift-thumb{width:58px;height:58px;display:flex;align-items:center;justify-content:center;background:#ead7ad;border:1px solid var(--line);overflow:hidden}
+.nft-gift-thumb img{width:100%;height:100%;object-fit:contain;padding:4px;filter:drop-shadow(0 4px 5px #24140e33)}
+.nft-gift-main{min-width:0}
+.nft-gift-main strong{display:block;font:600 23px/1.05 "Cormorant Garamond",serif;color:var(--brown)}
+.nft-gift-main small{display:block;margin-top:5px;color:var(--brown2);font-size:10px}
+.nft-gift-action{text-align:right;white-space:nowrap}
+.nft-gift-action b{display:block;color:var(--burg);font-size:11px}
+.nft-gift-action span{display:block;margin-top:5px;color:var(--brown2);font-size:9px}
+@media(max-width:620px){
+ .nft-market-card{grid-template-columns:50px 1fr auto;gap:10px;min-height:68px;padding:9px 10px}
+ .nft-gift-thumb{width:50px;height:50px}
+ .nft-gift-main strong{font-size:20px}
+ .nft-gift-main small{font-size:9px}
+ .nft-gift-action span{display:none}
+}
