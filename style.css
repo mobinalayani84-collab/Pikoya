@@ -18,3 +18,9 @@ footer{padding:35px 5vw;border-top:1px solid var(--line);display:flex;justify-co
 
 /* Pikoya banner artwork */
 .hero-card{background-image:url("file_000000008618821089451802e626503f.png");background-size:cover;background-position:center;overflow:hidden}.hero-card:before{background:#4b2d1f55;color:#fff0c966}.product-art{overflow:hidden;position:relative;background-size:cover;background-position:center}.product-art-premium{background-image:url("premium.png")}.product-art-stars{background-image:url("stars.png")}.product-art-boost{background-image:url("boost.png")}.product-art-nft{background-image:url("file_00000000d7748210b66c82b92714eed8.png")}.product-art span{position:relative;z-index:1;background:#4b2d1fcc;padding:5px 16px;border:1px solid #fff3ce;color:#fff3ce}
+
+/* Banner layout fix */
+.hero{display:block;padding:45px 0 30px}.hero-card{min-height:0;height:auto;aspect-ratio:16/7;background-repeat:no-repeat;background-size:100% 100%;background-position:center;border:0;box-shadow:none;padding:0}.hero-card:before,.hero-card .stamp{display:none}
+.services{align-items:stretch}.service{padding:0;min-height:0;overflow:hidden}.service-banner{width:100%;aspect-ratio:4/3;background-size:cover;background-position:center;border-bottom:1px solid var(--line)}.service-info{padding:16px 18px 4px}.service h3{margin:0 0 6px}.service p{margin:0 0 10px}.service>.btn{margin:0 18px 18px}
+.service-premium .service-banner{background-image:url("premium.png")}.service-stars .service-banner{background-image:url("stars.png")}.service-boost .service-banner{background-image:url("boost.png")}.service-nft .service-banner{background-image:url("file_000000008618821089451802e626503f.png")}
+.product-art-nft{background-image:url("file_00000000d7748210b66c82b92714eed8.png")}
