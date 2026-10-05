@@ -8,7 +8,7 @@ Pikoya is a clean, vintage-inspired virtual services storefront template for Pre
 - Premium, Stars, Boost, and NFT service pages
 - Custom Stars amount calculator
 - Cart with USD totals
-- Demo order creation and order history
+- Demo order creation, order history, and local admin status controls
 - Favorites, search, settings, support, and help pages
 - NFT collection browser with model selection
 - Animated TGS NFT previews with WebP fallback
@@ -16,6 +16,7 @@ Pikoya is a clean, vintage-inspired virtual services storefront template for Pre
 - TON-based NFT pricing with a USD selling price
 - English UI
 - GitHub Pages-ready static deployment
+- Buyer-facing documentation and clear production limitations
 
 ## Important
 
