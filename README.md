@@ -1,33 +1,62 @@
-# Pikoya
+# Pikoya — Digital Services Marketplace Template
 
-Pikoya is a clean, vintage-inspired virtual services storefront template for Premium, Stars, Boost, and NFT products.
+Pikoya is a polished, responsive marketplace-style website template for selling digital services such as Premium, Stars, Boost and NFT collectibles.
 
 ## Included
 
-- Responsive storefront
-- Premium, Stars, Boost, and NFT service pages
-- Custom Stars amount calculator
-- Cart with USD totals
-- Demo order creation, order history, and local admin status controls
-- Favorites, search, settings, support, and help pages
-- NFT collection browser with model selection
-- Animated TGS NFT previews with WebP fallback
+- Vintage/editorial visual system
+- Responsive storefront and service pages
+- Premium, Stars, Boost and NFT catalog
+- Custom Stars amount calculator with USD pricing
+- Boost quantity rules
+- NFT collection browser with 120+ collectible collections
+- Model-level NFT selection
+- Animated TGS previews with WebP fallback
 - NFT Backdrop selection
-- TON-based NFT pricing with a USD selling price
-- English UI
+- USD pricing throughout the demo
+- Shopping cart with quantities, removal and totals
+- Demo order creation and order-status UI
+- My Account, My Orders, Favorites, Settings, Support and Help pages
+- FAQ section
 - GitHub Pages-ready static deployment
-- Buyer-facing documentation and clear production limitations
 
-## Important
+## Production limitations
 
-This is a static front-end template. Production features such as secure accounts, SMS verification, payment processing, supplier automation, and server-side order management require a backend or third-party services.
+This is a front-end template/demo. The following require a backend or paid third-party services and are intentionally left as integration points:
 
-Hosting, domain, SMS, payment gateways, and other third-party service fees are not included.
+- Secure SMS verification
+- Real user authentication and password storage
+- Real payment processing
+- Production database
+- Supplier/API fulfillment
+- Secure production admin authentication
 
-## Local use
+The buyer can connect these services on their own hosting/backend.
 
-Open `index.html` in a static web server, or deploy the repository with GitHub Pages.
+## NFT data
 
-## Demo
+The NFT catalog uses public data/assets from the TelegramGiftsAssests project. Before using the catalog commercially, the buyer should review the upstream project's current license/terms and data sources.
 
-The project is designed to run as a static demo without paid infrastructure.
+NFT prices use a reference TON/USD rate for the demo and should be updated before production.
+
+## Deployment
+
+No build step is required. The project can run on GitHub Pages or other static hosting such as Netlify, Vercel static hosting, Cloudflare Pages, or a normal web server.
+
+## Handoff
+
+A sale can include:
+
+- Full source repository
+- Website assets
+- Current demo configuration
+- Setup documentation
+- GitHub repository transfer
+
+Domain, hosting, SMS provider, payment gateway, backend and other third-party service costs are not included.
+
+For a full ownership handoff, the GitHub repository can be transferred to the buyer's GitHub account. GitHub supports direct repository transfers; after the buyer accepts the transfer, they become the repository owner.
+
+## License
+
+This repository is offered as a one-buyer digital asset. The buyer may modify, deploy and use the purchased project for their own commercial project. Redistribution or resale of the original source as a standalone template is not included unless separately agreed in writing.
